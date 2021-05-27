@@ -7,12 +7,12 @@
     "folds" : "",
     "hash" : "0",
     "id" : "5686C280",
-    "lastKnownWriteTime" : 1622098380,
-    "last_content_update" : 1622098380074,
+    "lastKnownWriteTime" : 1622098490,
+    "last_content_update" : 1622098490855,
     "path" : "~/Programming for Fun/R Shiny/MLB/MLB_Stats/MLB-Dashboard/MLB_Stats/server.R",
     "project_path" : "MLB_Stats/server.R",
     "properties" : {
-        "cursorPosition" : "3,26",
+        "cursorPosition" : "7,30",
         "scrollLine" : "0"
     },
     "relative_order" : 3,
