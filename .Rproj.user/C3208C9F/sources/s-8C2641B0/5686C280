@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1622097582473.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1537449273",
+    "id" : "5686C280",
+    "lastKnownWriteTime" : 1622097613,
+    "last_content_update" : 1622097613793,
+    "path" : "~/Programming for Fun/R Shiny/MLB/MLB_Stats/MLB-Dashboard/MLB_Stats/server.R",
+    "project_path" : "MLB_Stats/server.R",
+    "properties" : {
+        "cursorPosition" : "3,1",
+        "scrollLine" : "0"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
