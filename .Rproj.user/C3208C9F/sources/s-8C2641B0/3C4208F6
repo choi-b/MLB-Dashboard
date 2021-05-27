@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1622098310476.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3627186892",
+    "id" : "3C4208F6",
+    "lastKnownWriteTime" : 1622098381,
+    "last_content_update" : 1622098381603,
+    "path" : "~/Programming for Fun/R Shiny/MLB/MLB_Stats/MLB-Dashboard/data_exploration.R",
+    "project_path" : "data_exploration.R",
+    "properties" : {
+        "cursorPosition" : "4,0",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
