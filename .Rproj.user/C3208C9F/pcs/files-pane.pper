@@ -1,0 +1,9 @@
+{
+    "path" : "~/Programming for Fun/R Shiny/MLB/MLB_Stats/MLB-Dashboard/Data",
+    "sortOrder" : [
+        {
+            "ascending" : true,
+            "columnIndex" : 2
+        }
+    ]
+}
