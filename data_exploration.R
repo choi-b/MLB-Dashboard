@@ -10,13 +10,14 @@
 library(dplyr)
 library(sqldf)
 library(ggplot2)
+library(ggrepel)
 
 #See sample data
 #read.csv("./Data/AllstarFull.csv") #ALL STARs
 #read.csv("./Data/Batting.csv") #Batting stats
 #read.csv("./Data/BattingPost.csv") #Postseason Batting (has rounds as well)
 #read.csv("./Data/Fielding.csv") #Fielding stats (assists, errors, DP, etc.)
-read.csv("./Data/Pitching.csv") #Pitching stats
+#read.csv("./Data/Pitching.csv") #Pitching stats
 #read.csv("./Data/Salaries.csv") #Salaries by year
 
 ##############################
@@ -129,6 +130,70 @@ BattingChamps <-
   group_by(yearID) %>%
   top_n(1, AVG)
 
-#Most recently: Tim Anderson (2019), Mookie Betts (2018), and Jose Altuve (2017 da major cheating season ^^)
 BattingChamps
+#Most recent Batting Champs: 
+#Tim Anderson (2019)
+#Mookie Betts (2018)
+#Jose Altuve (2017 major cheating season ^^)
+
+
+#Back to using 'df_bat_decade2'
+
+## Hits vs. RBIs ##
+
+df_bat_decade2 %>%
+  mutate(Batting=case_when(H >= 200 ~ "200+ Hits",
+                       H >= 100 & H < 200 ~ "Between 100 and 200 Hits",
+                       H < 100 ~ "Less than 100 Hits")) %>%
+  ggplot(aes(x=H, y=RBI, color = Batting)) +
+  geom_point() +
+  theme_minimal() +
+  ggtitle('Hits vs. RBIs')
+
+#seems difficult to obtain those 200+ hits, as there are only a few hitters in that category
+# df_bat_decade2 %>%
+#   filter(H>=200)
+
+#In general, players with more hits tend to have more RBIs
+#Take a look at a few players with 175+hits and < 50 RBIs
+#Most, if not all, of these players were lead off hitters, hence the lack of runs batted in.
+df_bat_decade2 %>%
+  filter(H>=175 & RBI<50)
+#They all have a high number of plate appearances.
+
+
+## SO vs. HRs ##
+#to see if those with a lot of HRs also have a high strike out rate (swings aggressively) ##
+#For simplicity, let's only look at 2019 records
+df_bat_decade2 %>%
+  filter(yearID == 2019) %>%
+  ggplot(aes(x=HR, y=SO)) +
+  geom_point() +
+  theme_minimal() +
+  geom_smooth(method=lm) + #add regression line
+  ggtitle('Homeruns vs Strike Outs')
+#In general, seems to be true that players with more HRs tend to have more SO
+
+
+#Pete Alonso hit 53 HRs, and struck out 183 times (3rd most)
+df_bat_decade2 %>%
+  filter(yearID == 2019) %>%
+  mutate(Top5_Most_SO = ifelse(SO >= sort(SO, decreasing = TRUE)[5], T, F)) %>%
+  ggplot(aes(x=HR, y=SO, label = playerID)) +
+  geom_point(aes(color = Top5_Most_SO)) +
+  scale_color_manual(values = c('#595959', 'red')) +
+  geom_text_repel(aes(label = ifelse(SO >= sort(SO, decreasing = TRUE)[5], playerID,'')),
+                  box.padding = 0.35,
+                  point.padding = 0.5,
+                  segment.color = 'grey50') +
+  theme_minimal() +
+  geom_smooth(method=lm) + #add regression line
+  ggtitle('Homeruns vs Strike Outs')
+
+#According to sabermetrics, an excellent strikeout (K)%: 10%, and BB%: 15% where
+#K% = K / PA
+#BB% = BB / PA
+#Source: https://library.fangraphs.com/offense/rate-stats/
+
+#Need to calculate the two new variables
 
