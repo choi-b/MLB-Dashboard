@@ -348,4 +348,4 @@ teams_2019postpitch %>%
   summarise_each(list(sum)) %>%
   mutate(IP=IPouts/3,
          Team_ERA = (9*ER)/IP)  %>% #IP = IPouts/3 & ERA = 9*ER / IP
-  arrange(Team_ERA) #WAS had a solid team ERA as well.
+  arrange(Team_ERA) #WAS had a solid team ERA as well
