@@ -344,5 +344,3 @@ teams_2019postpitch %>%
          Team_ERA = (9*ER)/IP, #ERA = 9*ER / IP
          Team_WHIP = (H+BB)/IP) %>% #WHIP = (H+BB)/IP
   arrange(Team_ERA) #WAS had a solid team ERA as well
-
-
