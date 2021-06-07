@@ -26,4 +26,5 @@ teams_2019_pitch <-
 head(teams_2019_pitch)
 
 #GIDP in 'teams_2019_pitch' means DP Induced
-#Change this column name
+#Similarly, H,ER,BB,SH/SF, etc... in pitching = allowed by opponents
+#Need to sort through these columns...
