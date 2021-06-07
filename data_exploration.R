@@ -332,20 +332,17 @@ head(df_postpitch)
 teams_2019postpitch <-
   df_postpitch %>%
   filter(yearID==2019) %>%
-  select(4,13,15,16:19)
+  select(4,13:19)
 head(teams_2019postpitch)
-
-#check mean opponent's batting average
-teams_2019postpitch %>%
-  group_by(teamID) %>%
-  summarise(OppBA = mean(BAOpp)) %>%
-  arrange(OppBA) #Opponent's batting average was quite low for WAS (#4) indicating pitching overall, was solid
 
 #Calculate number of innings pitched/ER to calculate team ERA
 teams_2019postpitch %>%
-  select(1:5) %>%
+  select(1:7) %>%
   group_by(teamID) %>%
   summarise_each(list(sum)) %>%
-  mutate(IP=IPouts/3,
-         Team_ERA = (9*ER)/IP)  %>% #IP = IPouts/3 & ERA = 9*ER / IP
+  mutate(IP=IPouts/3, #IP = IPouts/3
+         Team_ERA = (9*ER)/IP, #ERA = 9*ER / IP
+         Team_WHIP = (H+BB)/IP) %>% #WHIP = (H+BB)/IP
   arrange(Team_ERA) #WAS had a solid team ERA as well
+
+
