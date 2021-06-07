@@ -1,7 +1,8 @@
 # Brian Choi
-# R Shiny Exploration
-# Date Created: 5.27.2021
-# Last Modified: 5.27.2021
+# Project: R Shiny Exploration
+# File: MLB Data Exploration
+# File Created: 5.27.2021
+# Last Modified: 6.6.2021
 
 #Data Source: http://www.seanlahman.com/baseball-archive/statistics/
 #For more details on data dictionary: check 'readme2014.txt'
@@ -100,7 +101,7 @@ summary(df_sal$yearID) #only from 1985 to 2016 (not sure why)
 ######## Basic Analysis #########
 #################################
 
-# 1. Best Batting Avg Holders from 2010 to 2019
+# Best Batting Avg Holders from 2010 to 2019
 head(df_bat_decade)
 #Since there is no 'AVG' column, need to divide H by AB
 df_bat_decade$AVG = round(df_bat_decade$H/df_bat_decade$AB, 3)
@@ -112,6 +113,7 @@ head(df_bat_decade)
 
 summary(df_bat_decade$AB) #Mean AB is only 162
 summary(df_bat_decade$G) #Mean number of games: 58
+
 #With standard season of 162 games, players need 502 plate appearances (PA) to qualify for the batting title
 #For this dataset, let's have PA = AB + BB + IBB + HBP + SH + SF 
 #Missing data: defensive interference, reaching base by error, etc. We'll work with what we have.
@@ -139,7 +141,7 @@ BattingChamps
 
 #Back to using 'df_bat_decade2'
 
-## Hits vs. RBIs ##
+## RBIs vs. Hits ##
 
 df_bat_decade2 %>%
   mutate(Batting=case_when(H >= 200 ~ "200+ Hits",
@@ -148,7 +150,7 @@ df_bat_decade2 %>%
   ggplot(aes(x=H, y=RBI, color = Batting)) +
   geom_point() +
   theme_minimal() +
-  ggtitle('Hits vs. RBIs')
+  ggtitle('RBIs vs. Hits')
 
 #seems difficult to obtain those 200+ hits, as there are only a few hitters in that category
 # df_bat_decade2 %>%
@@ -171,10 +173,8 @@ df_bat_decade2 %>%
   geom_point() +
   theme_minimal() +
   geom_smooth(method=lm) + #add regression line
-  ggtitle('Homeruns vs Strike Outs')
+  ggtitle('Strikeouts vs Homeruns')
 #In general, seems to be true that players with more HRs tend to have more SO
-
-
 #Pete Alonso hit 53 HRs, and struck out 183 times (3rd most)
 df_bat_decade2 %>%
   filter(yearID == 2019) %>%
@@ -188,12 +188,154 @@ df_bat_decade2 %>%
                   segment.color = 'grey50') +
   theme_minimal() +
   geom_smooth(method=lm) + #add regression line
-  ggtitle('Homeruns vs Strike Outs')
+  ggtitle('Strikeouts vs Homeruns')
 
-#According to sabermetrics, an excellent strikeout (K)%: 10%, and BB%: 15% where
+#According to sabermetrics, an excellent strikeout rate is (K)%: 10%, and BB%: 15% where
 #K% = K / PA
 #BB% = BB / PA
 #Source: https://library.fangraphs.com/offense/rate-stats/
 
 #Need to calculate the two new variables
+head(df_bat_decade2)
 
+df_bat_decade3 <-
+  df_bat_decade2 %>%
+  mutate(K_Rate = round(SO/PA,2),
+         BB_Rate = round(BB/PA,2))
+head(df_bat_decade3)
+
+## Strikeout rate summary ##
+summary(df_bat_decade3$K_Rate) #median 24%, mean 29%
+summary(df_bat_decade3[df_bat_decade3$yearID==2019,]$K_Rate) #Look at single year (2019)
+#median: 27%, mean: 35%
+
+## Plot K_Rate vs. H (in 2019 only) ##
+df_bat_decade3 %>%
+  filter(yearID==2019) %>% #only 2019  
+  ggplot(aes(x=K_Rate, y=H)) +
+  geom_point() +
+  geom_vline(aes(xintercept=0.27), color='red') +
+  geom_vline(aes(xintercept=0.35), color = 'blue') +
+  annotate(x=0.27,y=+Inf,label="Median K Rate",vjust=2,geom="label") +
+  annotate(x=0.35,y=220,label="Average K Rate",vjust=2,geom="label") +
+  theme_minimal() +
+  ggtitle('K_Rate vs. RBIs')
+
+#Most good hitters (e.g. 150+ H in a season) tend to have a LESS strikeout rate than the median/average K rate.
+#Use what's considered "excellent" K rate = 10%
+df_bat_decade3 %>%
+  filter(yearID==2019) %>% #only 2019  
+  ggplot(aes(x=K_Rate, y=H)) +
+  geom_point() +
+  geom_vline(aes(xintercept=0.10), color='red') +
+  annotate(x=0.10,y=+Inf,label="Excellent K Rate",vjust=1,geom="label") +
+  theme_minimal() +
+  ggtitle('K_Rate vs. RBIs')
+#There's very few hitters with K rate < 10%, and only a few of these players have 150+ hits.
+
+
+## Base on balls (BB) rate summary ##
+summary(df_bat_decade3[df_bat_decade3$yearID==2019,]$BB_Rate) #Look at single year (2019)
+#median: 6%, mean: 6%
+
+## Plot H vs. BB_Rate
+df_bat_decade3 %>%
+  filter(yearID==2019) %>% #only 2019  
+  ggplot(aes(x=BB_Rate, y=H)) +
+  geom_point() +
+  geom_vline(aes(xintercept=0.06), color='red') +
+  annotate(x=0.06,y=+Inf,label="Average BB Rate",hjust=-0.2, vjust=1, geom="label") +
+  theme_minimal() +
+  ggtitle('Hits vs. BB_Rate')
+
+#Use what's considered "excellent" BB rate = 15%
+df_bat_decade3 %>%
+  filter(yearID==2019) %>% #only 2019  
+  ggplot(aes(x=BB_Rate, y=H)) +
+  geom_point() +
+  geom_vline(aes(xintercept=0.15), color='red') +
+  annotate(x=0.15,y=+Inf,label="Excellent BB Rate",hjust=-0.2, vjust=1, geom="label") +
+  theme_minimal() +
+  ggtitle('Hits vs. BB_Rate')
+#Players to the right of this line have really good eye (doesn't reach for many bad balls/balls off the plate)
+
+
+## SB vs. CS ##
+#see if running aggressive base running (SB) led to more caught stealing (CS)
+df_bat_decade3 %>%
+  filter(yearID==2019 & SB>0 & CS>0 & PA>=200) %>% #look at 2019, and PA>=200
+  ggplot(aes(x=SB,CS)) +
+  geom_point() +
+  theme_minimal() +
+  scale_y_continuous(breaks=c(0,1,2,3,4,5,6,7,8,9,10)) +
+  ggtitle('Stolen Bases vs. Caught Stealing')
+#Players with more SBs tend to have slightly more CS (weak linear pattern)
+
+
+## Look at team performance (2019)
+#use the df_bat dataset
+teams_2019 <-
+  df_bat %>%
+  filter(yearID==2019) %>%
+  select(4, 7:22) %>% #'G' column: meaningless here since it's by team.
+  group_by(teamID) %>%
+  summarise_each(list(sum))
+head(teams_2019)
+
+#Teams with most hits
+teams_2019 %>%
+  arrange(desc(H)) #Boston Red Sox
+
+#Most HR
+teams_2019 %>%
+  arrange(desc(HR)) %>% #Minnesota Twins
+  print(n=15) 
+
+#Most RBI
+teams_2019 %>%
+  arrange(desc(RBI)) #Minnesota Twins
+
+#Least number of Strikeouts
+teams_2019 %>%
+  arrange(SO) #Houston Astros
+
+#2019 World Series Champion
+teams_2019 %>%
+  filter(teamID=='WAS') #WAS won the 2019 World Series without having the best offense 
+#They were 7th in H and RBI, 13th in HR, but 4th in number of strikeouts (not bad)
+
+#Look at WAS's postbatting stats
+teams_2019post <-
+  df_postbat %>%
+  filter(yearID==2019) %>%
+  select(4, 7:22) %>%
+  group_by(teamID) %>%
+  summarise_each(list(sum))
+
+#Teams with most hits
+teams_2019post %>%
+  arrange(desc(H)) #HOU
+
+#Most HR
+teams_2019post %>%
+  arrange(desc(HR)) %>% #HOU
+  print(n=15) 
+
+#Most RBI
+teams_2019post %>%
+  arrange(desc(RBI)) #WAS
+
+#Least number of Strikeouts
+teams_2019post %>%
+  arrange(SO) #Houston Astros
+
+#Look at team batting avg
+head(teams_2019post)
+teams_2019post %>%
+  mutate(TeamBatting_Avg = H/AB) %>%
+  arrange(desc(TeamBatting_Avg)) #WAS (along with OAK) did have the best batting avg as a team in the postseason.
+
+#Check out team SO rate
+teams_2019post %>%
+  mutate(TeamSO_Rate = SO/AB) %>%
+  arrange(TeamSO_Rate) #WAS had a great SO rate as well (2nd after HOU)
