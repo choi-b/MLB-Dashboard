@@ -19,7 +19,9 @@ library(ggrepel)
 #read.csv("./Data/BattingPost.csv") #Postseason Batting (has rounds as well)
 #read.csv("./Data/Fielding.csv") #Fielding stats (assists, errors, DP, etc.)
 #read.csv("./Data/Pitching.csv") #Pitching stats
+#read.csv("./Data/PitchingPost.csv") #Postseason Pitching
 #read.csv("./Data/Salaries.csv") #Salaries by year
+
 
 ##############################
 ######## Import Data #########
@@ -30,6 +32,7 @@ df_bat <- read.csv("./Data/Batting.csv") #batting (reg season)
 df_postbat <- read.csv("./Data/BattingPost.csv") #batting (postseason)
 df_field <- read.csv("./Data/Fielding.csv") #fielding
 df_pitch <- read.csv("./Data/Pitching.csv") #pitching
+df_postpitch <- read.csv("./Data/PitchingPost.csv") #Postseason Pitching
 df_sal <- read.csv("./Data/Salaries.csv") #salaries
 df_people <- read.csv("./Data/People.csv") #people
 
@@ -305,37 +308,44 @@ teams_2019 %>%
 #They were 7th in H and RBI, 13th in HR, but 4th in number of strikeouts (not bad)
 
 #Look at WAS's postbatting stats
-teams_2019post <-
+teams_2019postbat <-
   df_postbat %>%
   filter(yearID==2019) %>%
   select(4, 7:22) %>%
   group_by(teamID) %>%
   summarise_each(list(sum))
 
-#Teams with most hits
-teams_2019post %>%
-  arrange(desc(H)) #HOU
-
-#Most HR
-teams_2019post %>%
-  arrange(desc(HR)) %>% #HOU
-  print(n=15) 
-
-#Most RBI
-teams_2019post %>%
-  arrange(desc(RBI)) #WAS
-
-#Least number of Strikeouts
-teams_2019post %>%
-  arrange(SO) #Houston Astros
-
 #Look at team batting avg
-head(teams_2019post)
-teams_2019post %>%
+head(teams_2019postbat)
+teams_2019postbat %>%
   mutate(TeamBatting_Avg = H/AB) %>%
   arrange(desc(TeamBatting_Avg)) #WAS (along with OAK) did have the best batting avg as a team in the postseason.
 
 #Check out team SO rate
-teams_2019post %>%
+teams_2019postbat %>%
   mutate(TeamSO_Rate = SO/AB) %>%
   arrange(TeamSO_Rate) #WAS had a great SO rate as well (2nd after HOU)
+
+#Check out postseason pitching
+head(df_postpitch)
+
+teams_2019postpitch <-
+  df_postpitch %>%
+  filter(yearID==2019) %>%
+  select(4,13,15,16:19)
+head(teams_2019postpitch)
+
+#check mean opponent's batting average
+teams_2019postpitch %>%
+  group_by(teamID) %>%
+  summarise(OppBA = mean(BAOpp)) %>%
+  arrange(OppBA) #Opponent's batting average was quite low for WAS (#4) indicating pitching overall, was solid
+
+#Calculate number of innings pitched/ER to calculate team ERA
+teams_2019postpitch %>%
+  select(1:5) %>%
+  group_by(teamID) %>%
+  summarise_each(list(sum)) %>%
+  mutate(IP=IPouts/3,
+         Team_ERA = (9*ER)/IP)  %>% #IP = IPouts/3 & ERA = 9*ER / IP
+  arrange(Team_ERA) #WAS had a solid team ERA as well.
